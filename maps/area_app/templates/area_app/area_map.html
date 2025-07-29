@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Area Map</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+      #map {
+        height: 500px;
+        width: 100%;
+        margin-top: 20px;
+      }
+    </style>
+</head>
+<body>
+    <h1>Daftar Area Layanan</h1>
+
+    {% if areas %}
+      <ul>
+        {% for area in areas %}
+          <li>{{ area.name }} - {{ area.description }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Tidak ada area layanan.</p>
+    {% endif %}
+
+    <!-- Peta -->
+    <div id="map"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+      var map = L.map('map').setView([-7.005, 110.438], 9); // Koordinat tengah Jawa Tengah
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      var bounds = [];
+
+      {% for area in areas %}
+        var marker = L.marker([{{ area.latitude }}, {{ area.longitude }}]).addTo(map)
+          .bindPopup("<b>{{ area.name }}</b><br>{{ area.description }}");
+
+        var circle = L.circle([{{ area.latitude }}, {{ area.longitude }}], {
+          color: 'blue',
+          fillColor: '#0000FF',
+          fillOpacity: 0.1,
+          radius: {{ area.coverage_radius_km }} * 1000  // km to meter
+        }).addTo(map);
+
+        bounds.push(marker.getLatLng());
+      {% endfor %}
+
+      if (bounds.length > 0) {
+        map.fitBounds(bounds);
+      }
+    </script>
+</body>
+</html>
