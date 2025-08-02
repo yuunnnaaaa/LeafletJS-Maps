@@ -1,0 +1,87 @@
+{% extends 'base_dashboard_teacher.html' %}
+{% load static %}
+{% block head_block %}
+<link rel="stylesheet" href="{% static 'css/teachers_dashboard.css' %}">
+
+{% endblock %}
+{% block body_block %}
+<section class="container-fluid" style="background-color: #FFF3E4;">
+    <div class="row align-items-center">
+      
+      <div class="col-md-6 offset-md-1">
+        <div class="welcome-banner d-flex justify-content-between align-items-center">
+          
+          <div class="text-section">
+            <h2>Shopping Cart Page!</h2>
+            <p>View your cart here and finish your payment</p>
+          </div>
+          <img src="{% static '/img/ceker.jpg'%}" alt="talent" width="150" height="auto" class="img-fluid rounded">  
+        </div>
+      </div>
+    </div>
+  </section>
+  {% for product in cart_products %}
+  <div class="container">
+          <div class="col-md-12">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <div class="category-image">
+                        <img style="width: 100%;" src="{{ product.product_image }}" alt="Category Image">
+                      </div><br>
+                    </div>
+                    <div class="col">
+                      <h4 class="text-center"> {{ product }}</h4>
+                      <br>
+                      <p style="text-decoration: none; color: #252525;" >{{ product.small_desc }}</p>
+                      <p style="text-decoration: none; color: #252525;" >{{ product.desc }}</p>
+                      <span class="float-start">Harga Promo : Rp. {{ product.sell_price }}</span>
+                      <br>
+                      <button type="button" data-index="{{product.id}}" class="btn btn-danger delete-product">Remove</button>
+                    </div>
+                </div>
+              </a>
+              </div>
+            </div>
+          </div>
+        </div><br/>
+  </div>
+  {% endfor %}
+  <br>
+  <div align="center">
+    <h3>Total: Rp.{{ totals }}</h3>
+    <a href="#" class="btn btn-success">Checkout</a>
+    </div>
+    <br><br><br><br><br><br><br><br><br><br><br>
+  <script>
+    // Delete Item From Cart
+    $(document).on('click', '.delete-product', function(e){
+        e.preventDefault();
+        // grab the product id
+        //var productid = $(this).data('index');
+    
+        $.ajax({
+        type: 'POST',
+        data: {
+          product_id: $(this).data('index'),
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          action: 'post'
+        },
+        success: function(json){
+            //console.log(json)
+            //document.getElementById("cart_quantity").textContent = json.qty
+            location.reload();
+        },
+    
+        error: function(xhr, errmsg, err){
+    
+        }
+    
+    
+        });
+    
+    })
+    </script>
+{% endblock %}
