@@ -1,8 +1,8 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
-from .models import User, Product
+from .models import User, Product, Category
 from .cart import CartHandler  # Update import
-
+from django.contrib import messages
 # Create your views here.
 
 def cart_summary(request):
@@ -26,3 +26,36 @@ def cart_delete_product(request):
         product_id = int(request.POST.get('product_id'))
         cart.deleteproduct(product=product_id)
         return JsonResponse({'product': product_id})
+
+def pilihPaket(request):
+    category = Category.objects.filter(status=0)
+    context = {'category':category}
+    return render(
+        request,
+        'pilihPaket.html', context
+    )
+
+
+def pilihProduk(request, slug):
+    if(Category.objects.filter(slug=slug, status=0)):
+        product = Product.objects.filter(category__slug=slug)
+        category = Category.objects.filter(slug=slug).first()
+        context = {'product' : product, 'category' : category}
+        return render(request, "pilihProduk.html", context)
+    else:
+        messages.warning(request, "No such category found")
+        return redirect('pilihPaket')
+
+
+def detailProduk(request, cate_slug, prod_slug):
+    if(Category.objects.filter(slug=cate_slug, status=0)):
+        if(Product.objects.filter(slug=prod_slug, status=0)):
+            products = Product.objects.filter(slug=prod_slug, status=0).first
+            context = {'products':products}
+        else:
+            messages.warning(request, "No such product found")
+            return redirect('pilihProduk')
+    else:
+        messages.warning(request, "No such category found")
+        return redirect('pilihPaket')
+    return render(request,"detailProduk.html", context)
