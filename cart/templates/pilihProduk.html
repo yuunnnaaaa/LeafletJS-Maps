@@ -28,7 +28,6 @@
               <a href="{% url 'detailProduk' item.category.slug item.slug %}" style="text-decoration: none; color: #F48C06;">
                 <div class="card-body">
                   <div class="category-image">
-                    <p>image : {{ item.product_image }}</p>
                     <img src="{{ item.product_image.url }}" alt="Products Image">
                   </div><br>
                   <h4 class="text-center"> {{ item.name }}</h4>
